@@ -1,0 +1,150 @@
+import java.util.ArrayList;
+
+
+class Person {
+    protected String name;
+    protected int age;
+
+    public Person(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public void displayInfo() {
+        System.out.println("Name: " + name + ", Age: " + age);
+    }
+}
+
+
+class Marks {
+    private int math;
+    private int science;
+
+    public Marks(int math, int science) {
+        this.math = math;
+        this.science = science;
+    }
+
+    public int getTotal() {
+        return math + science;
+    }
+
+    public double getAverage() {
+        return getTotal() / 2.0;
+    }
+
+    public void displayMarks() {
+        System.out.println("Marks:");
+        System.out.println("Math: " + math);
+        System.out.println("Science: " + science);
+        System.out.println("Total: " + getTotal());
+        System.out.println("Average: " + getAverage());
+    }
+}
+
+
+class Student extends Person {
+    private int studentId;
+    private Marks marks;
+
+    public Student(String name, int age, int studentId, Marks marks) {
+        super(name, age);
+        this.studentId = studentId;
+        this.marks = marks;
+    }
+
+    public int getStudentId() {
+        return studentId;
+    }
+
+    public void displayStudentInfo() {
+        System.out.println("---- Student Info ----");
+        super.displayInfo();
+        System.out.println("Student ID: " + studentId);
+        marks.displayMarks();
+        System.out.println("-----------------------");
+    }
+}
+
+
+class Course {
+    private String courseName;
+    private ArrayList<Student> students;
+
+    public Course(String courseName) {
+        this.courseName = courseName;
+        this.students = new ArrayList<>();
+    }
+
+    public void addStudent(Student student) {
+        students.add(student);
+    }
+
+    public void displayCourseDetails() {
+        System.out.println("=== Course: " + courseName + " ===");
+        for (Student student : students) {
+            student.displayStudentInfo();
+        }
+    }
+
+    public ArrayList<Student> getStudents() {
+        return students;
+    }
+}
+
+
+class StudentProcessor extends Thread {
+    private Student student;
+
+    public StudentProcessor(Student student) {
+        this.student = student;
+    }
+
+    @Override
+    public void run() {
+        System.out.println("Processing student ID: " + student.getStudentId());
+        try {
+            Thread.sleep(1000); // simulate processing
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        student.displayStudentInfo();
+    }
+}
+
+
+public class Main {
+    public static void main(String[] args) {
+      
+        Marks marks1 = new Marks(85, 90);
+        Marks marks2 = new Marks(78, 88);
+
+        
+        Student student1 = new Student("Alice", 20, 1001, marks1);
+        Student student2 = new Student("Bob", 21, 1002, marks2);
+
+       
+        Course course = new Course("Computer Science");
+        course.addStudent(student1);
+        course.addStudent(student2);
+
+      
+        course.displayCourseDetails();
+
+        
+        StudentProcessor processor1 = new StudentProcessor(student1);
+        StudentProcessor processor2 = new StudentProcessor(student2);
+
+        processor1.start();
+        processor2.start();
+
+        try {
+            processor1.join();
+            processor2.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        System.out.println("All student processing complete.");
+    }
+} 
